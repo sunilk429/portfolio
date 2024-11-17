@@ -1,0 +1,285 @@
+# A Complete Guide to Next-Auth: Authentication Made Simple
+
+Next-Auth (now [@auth/nextjs](https://authjs.dev/)) is a powerful authentication solution for Next.js applications that provides a robust, flexible, and secure authentication system out of the box. In this guide, we'll explore how to implement authentication in your Next.js application using Next-Auth.
+
+## Example
+
+````jsx live
+// This is a live code block, if the editor supports it
+function Counter() {
+  const [count, setCount] = React.useState(0);
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+
+<Counter />
+## What is Next-Auth?
+
+Next-Auth is an open-source authentication solution specifically designed for Next.js applications. It offers:
+
+- Built-in support for multiple authentication providers
+- Session management
+- JWT handling
+- Secure by default configuration
+- TypeScript support
+
+## Installation
+
+First, install the required packages:
+
+```bash
+npm install next-auth
+# or
+yarn add next-auth
+# or
+pnpm add next-auth
+````
+
+## Basic Setup
+
+### 1. Create an API Route
+
+Create a route handler in `app/api/auth/[...nextauth]/route.ts`:
+
+```typescript
+import NextAuth from "next-auth";
+import GithubProvider from "next-auth/providers/github";
+
+const handler = NextAuth({
+  providers: [
+    GithubProvider({
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+    }),
+  ],
+});
+
+export { handler as GET, handler as POST };
+```
+
+### 2. Configure Environment Variables
+
+Create a `.env.local` file:
+
+```plaintext
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key
+GITHUB_ID=your-github-client-id
+GITHUB_SECRET=your-github-client-secret
+```
+
+### 3. Setup Provider
+
+Add the `SessionProvider` to your root layout:
+
+```tsx
+import { SessionProvider } from "next-auth/react";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <SessionProvider>{children}</SessionProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## Using Authentication in Your App
+
+### Client-Side Authentication
+
+Here's how to implement sign-in and sign-out functionality:
+
+```tsx
+"use client";
+
+import { signIn, signOut, useSession } from "next-auth/react";
+
+export default function AuthButtons() {
+  const { data: session } = useSession();
+
+  if (session) {
+    return (
+      <div>
+        Signed in as {session.user?.email}
+        <button onClick={() => signOut()}>Sign out</button>
+      </div>
+    );
+  }
+  return <button onClick={() => signIn()}>Sign in</button>;
+}
+```
+
+### Server-Side Authentication
+
+For server components, you can use:
+
+```tsx
+import { getServerSession } from "next-auth";
+
+export default async function ServerComponent() {
+  const session = await getServerSession();
+
+  if (session) {
+    return <div>Signed in as {session.user?.email}</div>;
+  }
+  return <div>Not signed in</div>;
+}
+```
+
+## Protected Routes
+
+Here's how to create protected routes using middleware:
+
+```typescript
+// middleware.ts
+export { default } from "next-auth/middleware";
+
+export const config = {
+  matcher: ["/protected/:path*"],
+};
+```
+
+## Custom Sign-In Page
+
+You can create a custom sign-in page:
+
+```tsx
+"use client";
+
+import { signIn } from "next-auth/react";
+import { FormEvent } from "react";
+
+export default function SignIn() {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+
+    await signIn("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      callbackUrl: "/",
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="email" type="email" placeholder="Email" />
+      <input name="password" type="password" placeholder="Password" />
+      <button type="submit">Sign In</button>
+
+      <button onClick={() => signIn("github")}>Sign in with GitHub</button>
+    </form>
+  );
+}
+```
+
+## Advanced Features
+
+### 1. Callbacks
+
+Next-Auth provides several callbacks for custom behavior:
+
+```typescript
+export default NextAuth({
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.role = token.role;
+      return session;
+    },
+  },
+});
+```
+
+### 2. Custom Database Integration
+
+You can integrate with any database:
+
+```typescript
+export default NextAuth({
+  adapter: PrismaAdapter(prisma),
+  providers: [
+    CredentialsProvider({
+      async authorize(credentials) {
+        // Add your custom database logic here
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (user && validatePassword(credentials.password, user.password)) {
+          return user;
+        }
+        return null;
+      },
+    }),
+  ],
+});
+```
+
+## Best Practices
+
+1. **Security**
+
+   - Always use HTTPS in production
+   - Keep your `NEXTAUTH_SECRET` secure and unique
+   - Implement rate limiting for auth endpoints
+   - Use secure session cookies
+
+2. **Performance**
+
+   - Use server components where possible
+   - Implement proper caching strategies
+   - Minimize client-side authentication checks
+
+3. **Error Handling**
+   - Implement proper error handling for authentication failures
+   - Provide clear feedback to users
+   - Log authentication errors securely
+
+## Common Issues and Solutions
+
+### CSRF Token Error
+
+If you encounter CSRF token errors, ensure your `NEXTAUTH_URL` is properly set and matches your application URL.
+
+### Session Not Persisting
+
+Make sure the `SessionProvider` is properly configured at the root of your application.
+
+### Provider Configuration
+
+Double-check your provider credentials and ensure all required environment variables are set.
+
+## Conclusion
+
+Next-Auth provides a robust authentication solution for Next.js applications. With its extensive feature set and flexibility, you can implement secure authentication while maintaining clean, maintainable code.
+
+Remember to:
+
+- Keep your dependencies updated
+- Follow security best practices
+- Test your authentication flow thoroughly
+- Review the official documentation for updates and changes
+
+## Resources
+
+- [Official Next-Auth Documentation](https://next-auth.js.org/)
+- [Auth.js Documentation](https://authjs.dev/)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Security Best Practices](https://authjs.dev/guides/security)

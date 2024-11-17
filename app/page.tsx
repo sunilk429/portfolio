@@ -1,8 +1,14 @@
+import { Github, Twitter } from 'lucide-react'
+import Link from 'next/link'
+import Skills from './components/Skills'
+import WorkExperience from './modules/work-experience';
+import PortfolioHero from './components/hero';
 
 export default function Home() {
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>Hello World!</h1>
-    </main>
-  );
+
+    <PortfolioHero />
+
+  )
 }
