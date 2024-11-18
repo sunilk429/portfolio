@@ -1,15 +1,15 @@
 // src/app/blog/[slug]/page.tsx
 import fs from 'fs';
-import path from 'path';
 import matter from 'gray-matter';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import remarkGfm from 'remark-gfm';
 import { notFound } from 'next/navigation';
+import path from 'path';
+import remarkGfm from 'remark-gfm';
 
 interface PageProps {
-    params: {
+    params: Promise<{
         slug: string;
-    };
+    }>;
 }
 
 export async function generateStaticParams() {
