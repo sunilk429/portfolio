@@ -1,9 +1,9 @@
 "use client"
-import { useState, useEffect } from 'react'
+import { useTheme } from '@/app/providers/theme-provider'
+import { Menu, Moon, Sun, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Code2, Sun, Moon } from 'lucide-react'
-import { useTheme } from '@/app/providers/theme-provider'
+import { useEffect, useState } from 'react'
 
 const NavBar = () => {
   const [isScrolled, setIsScrolled] = useState(false)

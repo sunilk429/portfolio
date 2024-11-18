@@ -1,5 +1,4 @@
-import React from 'react';
-import { Github, Twitter, Linkedin, Mail, Rss, Heart } from 'lucide-react';
+import { Github, Heart, Linkedin, Mail, Rss } from 'lucide-react';
 
 const Footer = () => {
   const socialLinks = [

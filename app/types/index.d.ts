@@ -7,7 +7,7 @@ export interface PostProps {
     description?: string;
     tags?: string[];
     author?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

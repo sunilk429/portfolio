@@ -57,7 +57,7 @@ export default function BlogNotFound() {
                 {/* Search Suggestion */}
                 <div className="mt-12 text-sm text-gray-500 dark:text-gray-400">
                     <p>
-                        Looking for something specific? {' '}
+                        Looking for something specific?{' '}
                         <Link
                             href="/blog?search=true"
                             className="text-[var(--link)] hover:underline"
