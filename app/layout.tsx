@@ -18,12 +18,12 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const cookieStore = await cookies()
-  const themeCookie = cookieStore.get('ui-theme')?.value as 'light' | 'dark' || 'dark'
+  const themeCookie = cookieStore.get('ui-theme')?.value as ('dark' | 'light') || 'dark'
 
   return (
     <html lang="en" suppressHydrationWarning className={cn(themeCookie, inter.className)}>
       <body>
-        <ThemeProvider defaultTheme={themeCookie}>
+        <ThemeProvider defaultTheme={themeCookie || 'dark'}>
           <div className="flex min-h-screen flex-col">
             <NavBar />
             <main className="flex-1">

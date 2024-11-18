@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useEffect } from "react"
 import Cookies from "js-cookie"
 
-type Theme = "light" | "dark"
+type Theme = "dark" | "light"
 
 type ThemeProviderProps = {
     children: React.ReactNode
@@ -29,13 +29,12 @@ export function ThemeProvider({
 
     useEffect(() => {
         setMounted(true)
-        const savedTheme = localStorage.getItem(cookieKey) as Theme | null
+        const savedTheme = Cookies.get(cookieKey) as Theme | undefined
         if (savedTheme) {
             setTheme(savedTheme)
         } else {
-            // Check system preference
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-            setTheme(prefersDark ? 'dark' : 'light')
+            // If no saved theme, use dark as default
+            setTheme('dark')
         }
     }, [cookieKey])
 
@@ -47,8 +46,7 @@ export function ThemeProvider({
         root.classList.remove('light', 'dark')
         // Add the new theme class
         root.classList.add(newTheme)
-        // Store the preference
-        localStorage.setItem(cookieKey, newTheme)
+        // Store the preference in cookie only
         Cookies.set(cookieKey, newTheme, { expires: 365 })
     }, [cookieKey, mounted])
 
