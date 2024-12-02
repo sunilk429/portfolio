@@ -11,7 +11,10 @@ const inter = Inter({
   display: 'swap',
   variable: '--font-inter',
 })
-
+export const metadata = {
+  title: 'Sunil Kumar',
+  description: 'Sunil Kumar is a full-stack developer who loves building things for the web. Most days you\'ll find him crafting applications, documenting his journey through his blog and exploring interesting reads that inspire him.',
+}
 export default async function RootLayout({
   children,
 }: {
